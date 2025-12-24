@@ -3,6 +3,9 @@ from typing import List
 import os
 
 class Settings(BaseSettings):
+    
+    ENVIRONMENT: str = "development"
+    
     # Project
     PROJECT_NAME: str = "AI Construction Site Monitoring"
     VERSION: str = "1.0.0"
