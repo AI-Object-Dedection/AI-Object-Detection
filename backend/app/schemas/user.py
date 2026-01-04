@@ -20,6 +20,13 @@ class UserCreate(UserBase):
     family_name: Optional[str] = None
 
 
+class UserUpdate(BaseModel):
+    """Schema for updating user profile."""
+    name: Optional[str] = None
+    given_name: Optional[str] = None
+    family_name: Optional[str] = None
+
+
 class UserResponse(UserBase):
     """Schema for user response (returned to frontend)."""
     id: int

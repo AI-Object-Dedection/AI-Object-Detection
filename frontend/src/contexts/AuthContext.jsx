@@ -59,12 +59,18 @@ export const AuthProvider = ({ children }) => {
     setIsAuthenticated(false);
   }, []);
 
+  const updateUser = useCallback((updatedUser) => {
+    setUser(updatedUser);
+    authService.setUser(updatedUser);
+  }, []);
+
   const value = {
     user,
     isLoading,
     isAuthenticated,
     signInWithGoogle,
     signOut,
+    updateUser,
   };
 
   return (

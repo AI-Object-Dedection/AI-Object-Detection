@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.core.security import create_access_token, verify_token
 from app.schemas.auth import GoogleAuthRequest, TokenResponse
-from app.schemas.user import UserResponse
+from app.schemas.user import UserResponse, UserUpdate
 from app.services.user_service import user_service
 from app.services.google_auth_service import google_auth_service
 
@@ -113,6 +113,29 @@ async def get_current_user_info(
     Get the current authenticated user's information.
     """
     return UserResponse.model_validate(current_user)
+
+
+@router.put("/me", response_model=UserResponse)
+async def update_current_user(
+    user_update: UserUpdate,
+    current_user = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Update the current authenticated user's profile information.
+    
+    Only name, given_name, and family_name can be updated.
+    Email and Google ID are managed by Google and cannot be changed.
+    """
+    updated_user = user_service.update_profile(
+        db,
+        current_user,
+        name=user_update.name,
+        given_name=user_update.given_name,
+        family_name=user_update.family_name
+    )
+    
+    return UserResponse.model_validate(updated_user)
 
 
 @router.post("/logout")

@@ -1,13 +1,18 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import ProfileModal from '../components/modals/ProfileModal';
+import SettingsModal from '../components/modals/SettingsModal';
+import { authService } from '../services/authService';
 import './Topbar.css';
 
 const Topbar = ({ title = 'AI-Powered Reporting' }) => {
   const navigate = useNavigate();
-  const { user, signOut } = useAuth();
+  const { user, signOut, updateUser } = useAuth();
   const [showExportMenu, setShowExportMenu] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
 
   const handleExport = (format) => {
     alert(`Export as ${format} - Feature coming soon!`);
@@ -21,6 +26,22 @@ const Topbar = ({ title = 'AI-Powered Reporting' }) => {
   const handleLogout = () => {
     signOut();
     navigate('/login');
+  };
+
+  const handleOpenProfile = () => {
+    setShowUserMenu(false);
+    setShowProfileModal(true);
+  };
+
+  const handleOpenSettings = () => {
+    setShowUserMenu(false);
+    setShowSettingsModal(true);
+  };
+
+  const handleSaveSettings = async (formData) => {
+    const updatedUser = await authService.updateProfile(formData);
+    updateUser(updatedUser);
+    return updatedUser;
   };
 
   // Get user initials for avatar
@@ -102,8 +123,8 @@ const Topbar = ({ title = 'AI-Powered Reporting' }) => {
           </button>
           {showUserMenu && (
             <div className="topbar-dropdown-menu right">
-              <button onClick={() => alert('Profile')}>Profile</button>
-              <button onClick={() => alert('Settings')}>Settings</button>
+              <button onClick={handleOpenProfile}>Profile</button>
+              <button onClick={handleOpenSettings}>Settings</button>
               <button onClick={handleLogout}>Logout</button>
             </div>
           )}
@@ -120,6 +141,21 @@ const Topbar = ({ title = 'AI-Powered Reporting' }) => {
           }}
         />
       )}
+
+      {/* Profile Modal */}
+      <ProfileModal
+        isOpen={showProfileModal}
+        onClose={() => setShowProfileModal(false)}
+        user={user}
+      />
+
+      {/* Settings Modal */}
+      <SettingsModal
+        isOpen={showSettingsModal}
+        onClose={() => setShowSettingsModal(false)}
+        user={user}
+        onSave={handleSaveSettings}
+      />
     </header>
   );
 };

@@ -105,7 +105,26 @@ const authService = {
       this.signOut();
       return { success: false, error: 'Session expired' };
     }
+  },
+
+  /**
+   * Update user profile
+   * @param {Object} profileData - { name, given_name, family_name }
+   * @returns {Promise}
+   */
+  async updateProfile(profileData) {
+    try {
+      const response = await apiClient.put('/auth/me', profileData);
+      const user = response.data;
+      this.setUser(user);
+      return user;
+    } catch (error) {
+      console.error('Update Profile Error:', error);
+      const message = error.response?.data?.detail || 'Failed to update profile';
+      throw new Error(message);
+    }
   }
 };
 
+export { authService };
 export default authService;
