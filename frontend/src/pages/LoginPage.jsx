@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../contexts/AuthContext';
 import './LoginPage.css';
@@ -33,9 +33,13 @@ const LockIcon = () => (
 
 const LoginPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { signInWithGoogle } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  // Get the page user was trying to access before being redirected to login
+  const from = location.state?.from?.pathname || '/';
 
   const handleGoogleSuccess = async (credentialResponse) => {
     setIsLoading(true);
@@ -45,8 +49,8 @@ const LoginPage = () => {
       const result = await signInWithGoogle(credentialResponse.credential);
       
       if (result.success) {
-        // Redirect to dashboard on successful login
-        navigate('/', { replace: true });
+        // Redirect to the page they were trying to access, or dashboard
+        navigate(from, { replace: true });
       } else {
         setError(result.error || 'Authentication failed. Please try again.');
       }
