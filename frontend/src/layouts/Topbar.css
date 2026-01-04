@@ -134,6 +134,13 @@
   font-size: 0.9rem;
 }
 
+.topbar-avatar-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
 .topbar-user-info {
   display: flex;
   flex-direction: column;
