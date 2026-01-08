@@ -46,9 +46,14 @@ async def get_stats(db: Session = Depends(get_db)):
     total_storage = db.query(func.sum(Photo.file_size)).scalar() or 0
     storage_formatted = format_storage_size(total_storage)
     
+    # Calculate completion rate
+    completion_rate = analyzed_images / total_images if total_images > 0 else 0.0
+    
     return StatsResponse(
-        totalImages=total_images,
-        analyzedImages=analyzed_images,
+        total_photos=total_images,
+        analyzed_photos=analyzed_images,
         categories=categories_count,
-        storageUsed=storage_formatted
+        storage_used=storage_formatted,
+        completion_rate=completion_rate,
+        delta_total_photos_pct=12.5  # Placeholder for growth percentage
     )

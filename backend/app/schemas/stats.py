@@ -7,10 +7,12 @@ from pydantic import BaseModel
 
 class StatsResponse(BaseModel):
     """Schema for dashboard stats."""
-    totalImages: int = 0
-    analyzedImages: int = 0
+    total_photos: int = 0
+    analyzed_photos: int = 0
     categories: int = 0
-    storageUsed: str = "0 MB"
+    storage_used: str = "0 MB"
+    completion_rate: float = 0.0
+    delta_total_photos_pct: float = 0.0
 
 
 class CategoryDistribution(BaseModel):
