@@ -8,7 +8,7 @@ import {
 } from './mockData';
 
 // Flag to use mock data (set to false when backend is ready)
-const USE_MOCK = true;
+const USE_MOCK = false;
 
 // Simulate API delay
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));

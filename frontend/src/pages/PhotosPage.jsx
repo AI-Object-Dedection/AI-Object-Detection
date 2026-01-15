@@ -26,9 +26,11 @@ const PhotosPage = () => {
     try {
       setLoading(true);
       const data = await getPhotos();
-      setPhotos(data);
+      console.log('Photos loaded:', data);
+      setPhotos(data || []);
     } catch (error) {
       console.error('Error loading photos:', error);
+      setPhotos([]);
     } finally {
       setLoading(false);
     }
@@ -84,10 +86,15 @@ const PhotosPage = () => {
     alert(`Exporting ${selectedPhotos.length} photo(s)`);
   };
 
-  const filteredPhotos = photos.filter(photo =>
-    photo.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    photo.category?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredPhotos = photos.filter(photo => {
+    if (!searchTerm) return true;
+    const term = searchTerm.toLowerCase();
+    return (
+      (photo.description || '').toLowerCase().includes(term) ||
+      (photo.category || '').toLowerCase().includes(term) ||
+      (photo.original_filename || '').toLowerCase().includes(term)
+    );
+  });
 
   const sortedPhotos = [...filteredPhotos].sort((a, b) => {
     if (sortBy === 'latest') {
