@@ -4,10 +4,10 @@ import './Sidebar.css';
 
 const Sidebar = () => {
   const menuItems = [
-    { path: '/', label: 'Dashboard', icon: '📊' },
-    { path: '/search', label: 'AI Search', icon: '🔍' },
-    { path: '/photos', label: 'Site Photos', icon: '📷' },
-    { path: '/analytics', label: 'Analytics', icon: '📈' }
+    { path: '/dashboard', label: 'Dashboard', icon: '📊' },
+    { path: '/dashboard/search', label: 'AI Search', icon: '🔍' },
+    { path: '/dashboard/photos', label: 'Site Photos', icon: '📷' },
+    { path: '/dashboard/analytics', label: 'Analytics', icon: '📈' }
   ];
 
   // Mock recent queries
@@ -33,7 +33,7 @@ const Sidebar = () => {
             className={({ isActive }) => 
               `sidebar-nav-item ${isActive ? 'active' : ''}`
             }
-            end={item.path === '/'}
+            end={item.path === '/dashboard'}
           >
             <span className="sidebar-nav-icon">{item.icon}</span>
             <span className="sidebar-nav-label">{item.label}</span>
