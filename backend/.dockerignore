@@ -1,0 +1,12 @@
+# Keep the Docker build context small and clean
+venv/
+.venv/
+__pycache__/
+**/__pycache__/
+*.pyc
+*.db
+.env
+uploads/*
+!uploads/.gitkeep
+.git/
+.pytest_cache/

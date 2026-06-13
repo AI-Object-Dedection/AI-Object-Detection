@@ -67,6 +67,17 @@ export const uploadPhotos = async (files, projectId) => {
   return response.data;
 };
 
+// Run (or re-run) AI detection on a single photo.
+// Uses the active backend detector (mock now, SAM3 once connected).
+export const analyzePhoto = async (photoId) => {
+  if (USE_MOCK) {
+    await delay(800);
+    return { id: photoId, status: 'analyzed' };
+  }
+  const response = await apiClient.post(`/photos/${photoId}/analyze`);
+  return response.data;
+};
+
 // Analytics API
 export const getAnalytics = async () => {
   if (USE_MOCK) {

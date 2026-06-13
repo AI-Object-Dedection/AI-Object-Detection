@@ -5,7 +5,7 @@ import os
 import uuid
 from datetime import datetime
 from typing import List, Optional
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, Query
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, UploadFile, File, Form, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import desc
 
@@ -14,6 +14,7 @@ from app.core.config import settings
 from app.models.photo import Photo
 from app.schemas.photo import PhotoResponse, PhotoListResponse, UploadResponse
 from app.api.v1.endpoints.auth import get_current_user
+from app.services.analysis_service import analyze_photo, analyze_photo_by_id
 
 router = APIRouter(prefix="/photos", tags=["Photos"])
 
@@ -22,8 +23,9 @@ os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
 
 
 def get_photo_url(filename: str) -> str:
-    """Generate full URL for photo."""
-    return f"http://localhost:8000/uploads/{filename}"
+    """Generate full URL for photo using the configured public base URL."""
+    base = settings.PUBLIC_BASE_URL.rstrip("/")
+    return f"{base}/uploads/{filename}"
 
 
 @router.get("", response_model=List[PhotoResponse])
@@ -86,6 +88,7 @@ async def get_photos(
 
 @router.post("/upload", response_model=UploadResponse)
 async def upload_photos(
+    background_tasks: BackgroundTasks,
     files: List[UploadFile] = File(...),
     project_id: Optional[str] = Form(None),
     db: Session = Depends(get_db),
@@ -132,11 +135,16 @@ async def upload_photos(
             db.add(db_photo)
             db.commit()
             db.refresh(db_photo)
-            
+
+            # Kick off AI analysis in the background so the upload returns fast.
+            # The detector (mock now, SAM3 later) fills in category/objects/etc.
+            background_tasks.add_task(analyze_photo_by_id, db_photo.id)
+
             # Create response
             photo_response = PhotoResponse.model_validate(db_photo)
             photo_response.url = get_photo_url(unique_filename)
             photo_response.thumbnail = get_photo_url(unique_filename)
+            photo_response.status = "pending"
             uploaded_photos.append(photo_response)
             
         except Exception as e:
@@ -198,5 +206,37 @@ async def delete_photo(
     # Delete from database
     db.delete(photo)
     db.commit()
-    
+
     return {"success": True, "message": "Photo deleted"}
+
+
+@router.post("/{photo_id}/analyze", response_model=PhotoResponse)
+async def analyze_photo_endpoint(
+    photo_id: int,
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    """
+    Run (or re-run) AI detection on a single photo and return the updated record.
+
+    Uses whichever detector is active (DETECTOR_BACKEND): the mock detector now,
+    the trained SAM3 model once it is connected.
+    """
+    photo = db.query(Photo).filter(
+        Photo.id == photo_id,
+        Photo.user_id == current_user.id
+    ).first()
+
+    if not photo:
+        raise HTTPException(status_code=404, detail="Photo not found")
+
+    try:
+        photo = analyze_photo(photo, db)
+    except Exception as exc:  # noqa: BLE001
+        raise HTTPException(status_code=500, detail=f"Analysis failed: {exc}")
+
+    photo_response = PhotoResponse.model_validate(photo)
+    photo_response.url = get_photo_url(photo.filename)
+    photo_response.thumbnail = get_photo_url(photo.filename)
+    photo_response.status = "analyzed" if photo.category else "pending"
+    return photo_response

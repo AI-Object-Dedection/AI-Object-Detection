@@ -12,17 +12,33 @@ const ImageCard = ({
     category,
     uploaded_at,
     status,
-    description
+    description,
+    confidence,
+    detected_objects
   } = image;
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      month: 'short', 
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
       day: 'numeric',
       year: 'numeric'
     });
   };
+
+  // detected_objects is a JSON string produced by the backend detector
+  // (mock now, SAM3 later). Parse it into damage-class chips. Stays safe if
+  // the field is empty or not yet analyzed.
+  const parseDetected = (raw) => {
+    if (!raw) return [];
+    try {
+      const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
+      return Array.isArray(parsed?.classes) ? parsed.classes : [];
+    } catch (e) {
+      return [];
+    }
+  };
+  const detectedClasses = parseDetected(detected_objects);
 
   return (
     <div 
@@ -56,7 +72,31 @@ const ImageCard = ({
           </span>
         )}
         {category && (
-          <span className="image-card-category">{category}</span>
+          <span className="image-card-category">
+            {category}
+            {confidence != null && (
+              <span className="image-card-confidence">
+                {Math.round(confidence * 100)}%
+              </span>
+            )}
+          </span>
+        )}
+        {detectedClasses.length > 0 && (
+          <div className="image-card-damages">
+            {detectedClasses.slice(0, 4).map((d) => (
+              <span key={d.label} className="image-card-damage-chip">
+                {d.label}
+                {d.coverage != null && (
+                  <em>{Math.round(d.coverage * 100)}%</em>
+                )}
+              </span>
+            ))}
+            {detectedClasses.length > 4 && (
+              <span className="image-card-damage-chip more">
+                +{detectedClasses.length - 4}
+              </span>
+            )}
+          </div>
         )}
         <p className="image-card-date">{formatDate(uploaded_at)}</p>
         {description && (
