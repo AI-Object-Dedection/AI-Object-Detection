@@ -52,10 +52,7 @@
 }
 
 .landing-highlight {
-  background: linear-gradient(135deg, #818cf8 0%, #22d3ee 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: #818cf8;
 }
 
 .landing-hero-text p {
@@ -139,6 +136,65 @@
   font-size: 0.95rem;
   line-height: 1.6;
   color: #aab0c4;
+}
+
+.landing-defects {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 2rem 6rem;
+  text-align: center;
+}
+
+.landing-defects h2 {
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: 0.75rem;
+}
+
+.landing-defects-intro {
+  max-width: 640px;
+  margin: 0 auto 2.5rem;
+  color: #aab0c4;
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+.landing-defects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+  text-align: left;
+}
+
+.landing-defect-group {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 1.75rem;
+}
+
+.landing-defect-group h3 {
+  margin: 0 0 1rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #c7d2fe;
+}
+
+.landing-defect-group ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.landing-defect-group li {
+  font-size: 0.85rem;
+  color: #d1d5db;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 999px;
+  padding: 0.35rem 0.85rem;
 }
 
 .landing-footer {

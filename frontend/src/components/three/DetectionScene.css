@@ -1,0 +1,30 @@
+.scene-label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  white-space: nowrap;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #f3f4f6;
+  background: rgba(11, 13, 23, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  padding: 0.25rem 0.6rem 0.25rem 0.45rem;
+  pointer-events: none;
+  transform: translate(0.9rem, -0.9rem);
+}
+
+.scene-label-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--marker-color);
+  box-shadow: 0 0 6px var(--marker-color);
+  flex-shrink: 0;
+}
+
+.scene-label em {
+  font-style: normal;
+  font-weight: 700;
+  color: var(--marker-color);
+}
