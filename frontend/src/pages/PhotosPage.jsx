@@ -56,7 +56,6 @@ const PhotosPage = () => {
 
   const handleDrop = (e) => {
     e.preventDefault();
-    const files = Array.from(e.dataTransfer.files);
     if (fileInputRef.current) {
       fileInputRef.current.files = e.dataTransfer.files;
       handleFileSelect({ target: { files: e.dataTransfer.files } });
